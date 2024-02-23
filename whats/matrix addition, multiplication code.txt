@@ -1,0 +1,61 @@
+Addition matrices:
+-1 block, N*N threads:
+rowIndex = threadidx.y
+colIndex = threadidx.x
+
+c = [rowIndex][colIndex] = a[rowIndex][colIndex] + b[rowIndex][colIndex]
+
+nb = N*N
+size = nb*sizeof(int)
+
+-N*N blocks, 1 thread:
+rowIndex = blockidx.y
+colIndex = blockidx.x
+
+c = [rowIndex][colIndex] = a[rowIndex][colIndex] + b[rowIndex][colIndex]
+
+nb = N*N
+size = nb*sizeof(int)
+
+-N*N blocks, N*N threads:
+rowIndex = blockidx.y * blockDim.y + threadidx.y
+colIndex = blockidx.x * blockDim.x + threadidx.x
+
+c = [rowIndex][colIndex] = a[rowIndex][colIndex] + b[rowIndex][colIndex]
+
+nb = N*N*N*N
+size = nb*sizeof(int)
+
+
+-N*N blocks, N*N threads with width:
+rowIndex = (blockidx.y * blockDim.y + threadidx.y)* width
+colIndex = (blockidx.x * blockDim.x + threadidx.x)* width
+
+for (int i=;0 i < width; i++)
+	for (int j=0; j < width; j++)
+		c[rowIndex + i][colIndex + j] = a[rowIndex + i][colIndex + j] + b[rowIndex + i][colIndex + j];
+
+nb = N*N*N*N*width*width
+size = nb*sizeof(int)
+
+
+product matrices:
+-N*N blocks, N*N threads:
+rowIndex = blockIdx.y * blockDim.y + threadIdx.y
+colIndex = blockIdx.x * blockDim.x + threadIdx.x
+for (int k=0; k < n; k++)
+	c[rowIndex][colIndex] += a[rowIndex][k] * b[k][colIndex]
+
+int nb = N*N*N*N
+int size = nb * sizeof(int)
+
+-N*N blocks, N*N threads with width:
+rowIndex = (blockIdx.y * blockDim.y + threadIdx.y) * width;
+colIndex = (blockIdx.x * blockDim.x + threadIdx.x) * width;
+	for (int i=rowIndex; i < rowIndex + width; i++)
+		for (int j=colIndex; j < colIndex + width; j++)
+			for (int k=0; k < n; k++)
+				c[i][j] += a[i][k] * b[k][j]
+
+int nb = N*N*N*N*width*width
+int size = nb * sizeof(int)
