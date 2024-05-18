@@ -1,0 +1,24 @@
+__global__ void productKernel(int *a, int *b, int *c, int N){
+
+int row = blockIdx.y * blockDim.y + threadIdx.y;
+int col = blockIdx.x * blockDIm.x + threadIdx.x;
+
+for (int k=0; k<N; k++)
+    c[row, col]+= a[row, k] * b[k, col];
+
+}
+
+
+
+
+__global__ void productKernel(int *a, int *b, int *c, int N, int w){
+
+int row = (blockIdx.y * blockDim.y + threadIdx.y) * w;
+int col = (blockIdx.x * blockDIm.x + threadIdx.x) * w;
+
+for (int i = row; i< row+w; i++)
+    for(int j = col; j< col+w; j++)
+        for (int k=0; k<N; k++)
+            c[i, j]+= a[row, k] * b[k, col];
+
+}
